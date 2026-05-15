@@ -23,10 +23,7 @@ func NewHandlers(store *database.LogStore) *Handlers {
 func respondWithJSON(w http.ResponseWriter, statusCode int, payload interface{}) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(statusCode)
-	err := json.NewEncoder(w).Encode(payload)
-	if err != nil {
-		log.Println(err)
-	}
+	json.NewEncoder(w).Encode(payload)
 }
 
 func respondWithError(w http.ResponseWriter, statusCode int, message string) {

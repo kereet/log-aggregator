@@ -1,30 +1,57 @@
 package main
 
 import (
-	"log"
 	"log-aggregator/internal/database"
 	"log-aggregator/internal/handlers"
+	"log/slog"
 	"net/http"
 	"os"
+	"time"
 )
 
+func SetupLogLevel(level string) slog.Level {
+	var slogLevel slog.Level
+	switch level {
+	case "debug":
+		slogLevel = slog.LevelDebug
+	case "info":
+		slogLevel = slog.LevelInfo
+	case "warn":
+		slogLevel = slog.LevelWarn
+	case "error":
+		slogLevel = slog.LevelError
+	default:
+		slogLevel = slog.LevelInfo
+	}
+	return slogLevel
+}
+
 func main() {
+	logLevel := SetupLogLevel(os.Getenv("LOG_LEVEL"))
+	logger := slog.New(slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{
+		Level: logLevel,
+	}))
+	slog.SetDefault(logger)
+
 	databaseURL := os.Getenv("DATABASE_URL")
 	if databaseURL == "" {
 		databaseURL = "postgres://loguser:logpass@localhost:5432/logsdb?sslmode=disable"
+		slog.Warn("DATABASE_URL not set, using default", "url", databaseURL)
 	}
 
 	serverPort := os.Getenv("PORT")
 	if serverPort == "" {
 		serverPort = "8080"
+		slog.Warn("PORT not set, using default", "port", serverPort)
 	}
 
 	db, err := database.Connect(databaseURL)
 	if err != nil {
-		log.Fatal("Failed to connect to database:", err)
+		slog.Error("failed to connect to database", "error", err)
+		os.Exit(1)
 	}
 	defer db.Close()
-	log.Println("Connected to database")
+	slog.Info("connected to database")
 
 	logStore := database.NewLogStore(db)
 	logHandler := handlers.NewHandlers(logStore)
@@ -39,17 +66,37 @@ func main() {
 	loggedMux := loggingMiddleware(mux)
 
 	serverAddr := ":" + serverPort
-	log.Printf("Starting server on port %s", serverPort)
-	log.Printf("API available at http://localhost:%s/api/v1/", serverPort)
+	slog.Info("starting server", "port", serverPort)
+	slog.Info("API available", "url", "http://localhost:"+serverPort+"/api/v1/")
 
 	if err := http.ListenAndServe(serverAddr, loggedMux); err != nil {
-		log.Fatal("Server failed:", err)
+		slog.Error("server failed", "error", err)
+		os.Exit(1)
 	}
 }
 
 func loggingMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		log.Printf("%s %s %s", r.Method, r.URL.Path, r.RemoteAddr)
-		next.ServeHTTP(w, r)
+		start := time.Now()
+		wrapped := &responseWriter{ResponseWriter: w, statusCode: http.StatusOK}
+
+		next.ServeHTTP(wrapped, r)
+
+		slog.Info("request",
+			slog.String("method", r.Method),
+			slog.String("path", r.URL.Path),
+			slog.Int("status", wrapped.statusCode),
+			slog.Duration("duration", time.Since(start)),
+		)
 	})
+}
+
+type responseWriter struct {
+	http.ResponseWriter
+	statusCode int
+}
+
+func (rw *responseWriter) WriteHeader(code int) {
+	rw.statusCode = code
+	rw.ResponseWriter.WriteHeader(code)
 }
