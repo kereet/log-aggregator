@@ -1,0 +1,44 @@
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: logs_postgres
+    environment:
+      POSTGRES_DB: logsdb
+      POSTGRES_USER: loguser
+      POSTGRES_PASSWORD: logpass
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./sql/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - task-network
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U taskuser -d tasksdb" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  app:
+    build: .
+    container_name: log_server
+    ports:
+      - "8080:8080"
+    environment:
+      DATABASE_URL: postgres://loguser:logpass@postgres:5432/logsdb?sslmode=disable
+      PORT: 8080
+    volumes:
+      - ./data:/app/data
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - task-network
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+
+networks:
+  task-network:
+    driver: bridge
