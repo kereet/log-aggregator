@@ -251,7 +251,6 @@ func parseSharpInfo(content []byte) (map[string]map[string]any, error) {
 			continue
 		}
 		if strings.HasPrefix(line, "SW_GUID=") {
-			// Сохраняем предыдущий
 			if currentGUID != "" && currentParams != nil {
 				result[currentGUID] = currentParams
 			}
