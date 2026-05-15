@@ -106,7 +106,7 @@ func (s *LogStore) GetNodeInfoByNodeID(nodeID int) (*models.NodeInfo, error) {
 	err := s.db.QueryRow(`
         SELECT id, node_id, system_info, sharp_info
         FROM nodes_info WHERE node_id = $1
-    `, nodeID).Scan(&info.ID, &info.NodeID, &info.NodeGUID, &systemInfoBytes, &sharpInfoBytes)
+    `, nodeID).Scan(&info.ID, &info.NodeID, &systemInfoBytes, &sharpInfoBytes)
 
 	if err != nil {
 		return nil, err
