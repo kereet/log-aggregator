@@ -25,7 +25,7 @@ docker-compose up -d --build
 ```bash
 curl -X POST http://localhost:8080/api/v1/parse/ \
   -H "Content-Type: application/json" \
-  -d '{"file_path":"/app/data/log.zip"}'
+  -d '{"file_path":"/data/log.zip"}'
 ```
 ### Получить топологию
 
