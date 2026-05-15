@@ -6,6 +6,7 @@ import (
 	"bytes"
 	"encoding/csv"
 	"io"
+	"log"
 	"log-aggregator/internal/models"
 	"strconv"
 	"strings"
@@ -228,7 +229,7 @@ func parseSystemInfoBlock(lines []string) (map[string]map[string]any, error) {
 		nodeGUID := row[0]
 		info := make(map[string]any)
 		for j, val := range row[1:] {
-			key := headers[j]
+			key := headers[j+1]
 			info[key] = strings.Trim(val, `"`)
 		}
 		result[nodeGUID] = info
@@ -246,23 +247,19 @@ func parseSharpInfo(content []byte) (map[string]map[string]any, error) {
 
 	for scanner.Scan() {
 		line := strings.TrimSpace(scanner.Text())
-
-		if strings.HasPrefix(line, "---") {
+		if line == "" || strings.HasPrefix(line, "---") {
+			continue
+		}
+		if strings.HasPrefix(line, "SW_GUID=") {
+			// Сохраняем предыдущий
 			if currentGUID != "" && currentParams != nil {
 				result[currentGUID] = currentParams
 			}
-			currentGUID = ""
-			currentParams = nil
-			continue
-		}
-
-		if strings.HasPrefix(line, "SW_GUID=") {
 			currentGUID = "0x" + strings.TrimPrefix(line, "SW_GUID=")
 			currentParams = make(map[string]any)
 			continue
 		}
-
-		if currentGUID != "" && strings.Contains(line, "=") && !strings.HasPrefix(line, "SW_GUID=") {
+		if currentGUID != "" && strings.Contains(line, "=") {
 			parts := strings.SplitN(line, "=", 2)
 			if len(parts) == 2 {
 				key := strings.TrimSpace(parts[0])
@@ -275,11 +272,10 @@ func parseSharpInfo(content []byte) (map[string]map[string]any, error) {
 			}
 		}
 	}
-
 	if currentGUID != "" && currentParams != nil {
 		result[currentGUID] = currentParams
 	}
-
+	log.Println(result)
 	return result, nil
 }
 
