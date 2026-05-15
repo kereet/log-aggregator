@@ -6,7 +6,6 @@ import (
 	"bytes"
 	"encoding/csv"
 	"io"
-	"log"
 	"log-aggregator/internal/models"
 	"strconv"
 	"strings"
@@ -31,9 +30,9 @@ func ParseZip(path string) (*ParseResult, error) {
 		NodeInfos: []models.NodeInfo{},
 	}
 
-	nodeByGUID := make(map[string]*models.Node)
-	portsByNodeGUID := make(map[string][]models.Port)
+	var nodeInfos []models.NodeInfo
 	systemInfoByGUID := make(map[string]map[string]any)
+	sharpInfoByGUID := make(map[string]map[string]any)
 
 	for _, file := range r.File {
 		if file.FileInfo().IsDir() {
@@ -54,33 +53,23 @@ func ParseZip(path string) (*ParseResult, error) {
 
 			switch {
 			case strings.HasSuffix(file.Name, ".db_csv"):
-				nodes, ports, sysInfo, err := parseDBCSV(content)
+				nodes, ports, systemInfo, err := parseDBCSV(content)
 				if err != nil {
 					return err
 				}
-				for i := range nodes {
-					nodeByGUID[nodes[i].NodeGUID] = &nodes[i]
-				}
-				for guid, ports := range ports {
-					portsByNodeGUID[guid] = ports
-				}
-				for guid, info := range sysInfo {
+				result.Nodes = append(result.Nodes, nodes...)
+				result.Ports = append(result.Ports, ports...)
+				for guid, info := range systemInfo {
 					systemInfoByGUID[guid] = info
 				}
-				log.Println()
 
 			case strings.HasSuffix(file.Name, ".sharp_an_info"):
-				sharpInfoByGUID, err := parseSharpInfo(content)
+				sharpInfo, err := parseSharpInfo(content)
 				if err != nil {
 					return err
 				}
-				for guid, sharpInfo := range sharpInfoByGUID {
-					if systemInfoByGUID[guid] == nil {
-						systemInfoByGUID[guid] = make(map[string]any)
-					}
-					for k, v := range sharpInfo {
-						systemInfoByGUID[guid][k] = v
-					}
+				for guid, info := range sharpInfo {
+					sharpInfoByGUID[guid] = info
 				}
 			}
 			return nil
@@ -91,41 +80,23 @@ func ParseZip(path string) (*ParseResult, error) {
 		}
 	}
 
-	result.Nodes = make([]models.Node, 0, len(nodeByGUID))
-	for _, node := range nodeByGUID {
-		result.Nodes = append(result.Nodes, *node)
+	for _, node := range result.Nodes {
+		var nodeInfo models.NodeInfo
+		nodeGUID := node.NodeGUID
+		nodeInfo.NodeGUID = nodeGUID
+		nodeInfo.SystemInfo = systemInfoByGUID[nodeGUID]
+		nodeInfo.SharpInfo = sharpInfoByGUID[nodeGUID]
+		nodeInfos = append(nodeInfos, nodeInfo)
 	}
-
-	result.Ports = make([]models.Port, 0)
-	for _, ports := range portsByNodeGUID {
-		result.Ports = append(result.Ports, ports...)
-	}
-
-	for guid, info := range systemInfoByGUID {
-		var nodeID int
-		for _, node := range result.Nodes {
-			if node.NodeGUID == guid {
-				nodeID = node.ID
-				break
-			}
-		}
-		if nodeID != 0 {
-			result.NodeInfos = append(result.NodeInfos, models.NodeInfo{
-				NodeID:     nodeID,
-				SystemInfo: info,
-				SharpInfo:  nil,
-			})
-		}
-	}
-
+	result.NodeInfos = nodeInfos
 	return result, nil
 }
 
-func parseDBCSV(content []byte) ([]models.Node, map[string][]models.Port, map[string]map[string]any, error) {
+func parseDBCSV(content []byte) ([]models.Node, []models.Port, map[string]map[string]any, error) {
 	scanner := bufio.NewScanner(bytes.NewReader(content))
 
 	var nodes []models.Node
-	portsByGUID := make(map[string][]models.Port)
+	var ports []models.Port
 	systemInfoByGUID := make(map[string]map[string]any)
 
 	var inBlock bool
@@ -157,7 +128,7 @@ func parseDBCSV(content []byte) ([]models.Node, map[string][]models.Port, map[st
 				}
 			case "PORTS":
 				var err error
-				portsByGUID, err = parsePortsBlock(currentBlockLines)
+				ports, err = parsePortsBlock(currentBlockLines)
 				if err != nil {
 					return nil, nil, nil, err
 				}
@@ -176,7 +147,7 @@ func parseDBCSV(content []byte) ([]models.Node, map[string][]models.Port, map[st
 		}
 	}
 
-	return nodes, portsByGUID, systemInfoByGUID, nil
+	return nodes, ports, systemInfoByGUID, nil
 }
 
 func parseNodesBlock(lines []string) ([]models.Node, error) {
@@ -211,12 +182,8 @@ func parseNodesBlock(lines []string) ([]models.Node, error) {
 	return nodes, nil
 }
 
-func parsePortsBlock(lines []string) (map[string][]models.Port, error) {
-	//if len(lines) < 2 {
-	//	return make(map[string][]models.Port), nil
-	//}
-
-	portsByGUID := make(map[string][]models.Port)
+func parsePortsBlock(lines []string) ([]models.Port, error) {
+	var ports []models.Port
 
 	for i, line := range lines[1:] {
 		row := parseCSVLine(line)
@@ -224,29 +191,23 @@ func parsePortsBlock(lines []string) (map[string][]models.Port, error) {
 			return nil, NewParseError("PORTS", i+2, "expected at least 26 columns")
 		}
 
-		nodeGUID := row[0]
 		portNum, _ := strconv.Atoi(row[2])
 		portState, _ := strconv.Atoi(row[25])
 		portPhyState, _ := strconv.Atoi(row[24])
 
 		port := models.Port{
+			NodeGUID:     row[0],
 			PortGUID:     row[1],
 			PortNum:      portNum,
 			PortState:    portState,
 			PortPhyState: portPhyState,
 		}
-
-		portsByGUID[nodeGUID] = append(portsByGUID[nodeGUID], port)
+		ports = append(ports, port)
 	}
-
-	return portsByGUID, nil
+	return ports, nil
 }
 
 func parseSystemInfoBlock(lines []string) (map[string]map[string]any, error) {
-	if len(lines) < 2 {
-		return make(map[string]map[string]any), nil
-	}
-
 	result := make(map[string]map[string]any)
 	headers := strings.Split(lines[0], ",")
 
@@ -294,7 +255,7 @@ func parseSharpInfo(content []byte) (map[string]map[string]any, error) {
 		}
 
 		if strings.HasPrefix(line, "SW_GUID=") {
-			currentGUID = strings.TrimPrefix(line, "SW_GUID=")
+			currentGUID = "0x" + strings.TrimPrefix(line, "SW_GUID=")
 			currentParams = make(map[string]any)
 			continue
 		}

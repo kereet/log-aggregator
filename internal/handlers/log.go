@@ -73,7 +73,7 @@ func (h *Handlers) ParseLog(w http.ResponseWriter, r *http.Request) {
 			continue
 		}
 		parseResult.Ports[i].NodeID = nodeID
-		if err := h.store.InsertPort(nodeID, logID, &parseResult.Ports[i]); err != nil {
+		if err := h.store.InsertPort(nodeID, &parseResult.Ports[i]); err != nil {
 			h.store.UpdateLogStatus(logID, "failed", 0, 0)
 			respondWithError(w, http.StatusInternalServerError, "Failed to save port: "+err.Error())
 			return
@@ -87,9 +87,8 @@ func (h *Handlers) ParseLog(w http.ResponseWriter, r *http.Request) {
 			continue
 		}
 		parseResult.NodeInfos[i].NodeID = nodeID
-		if err := h.store.UpsertNodeInfo(nodeID, parseResult.NodeInfos[i].SystemInfo, parseResult.NodeInfos[i].SharpInfo); err != nil {
+		if err := h.store.InsertNodeInfo(nodeID, parseResult.NodeInfos[i].SystemInfo, parseResult.NodeInfos[i].SharpInfo); err != nil {
 			log.Printf("Warning: failed to save node info for node %d: %v", nodeID, err)
-			// не прерываем операцию, это не критично
 		}
 	}
 

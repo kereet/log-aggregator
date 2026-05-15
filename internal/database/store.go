@@ -77,39 +77,11 @@ func (s *LogStore) InsertNode(logID int, node *models.Node) error {
 	`, logID, node.Name, node.NodeType, node.NodeGUID, node.NumPorts).Scan(&node.ID)
 }
 
-// BatchInsertNodes — массовая вставка узлов
-func (s *LogStore) BatchInsertNodes(logID int, nodes []models.Node) error {
-	if len(nodes) == 0 {
-		return nil
-	}
-
-	query := `
-		INSERT INTO nodes (log_id, name, node_type, node_guid, num_ports)
-		VALUES ($1, $2, $3, $4, $5)
-		RETURNING id
-	`
-
-	for i := range nodes {
-		err := s.db.QueryRowx(query,
-			logID,
-			nodes[i].Name,
-			nodes[i].NodeType,
-			nodes[i].NodeGUID,
-			nodes[i].NumPorts,
-		).Scan(&nodes[i].ID)
-		if err != nil {
-			return err
-		}
-	}
-	return nil
-}
-
 func (s *LogStore) GetPortsByNodeID(nodeID int) ([]models.Port, error) {
 	var ports []models.Port
 	err := s.db.Select(&ports, `
 		SELECT id, node_id, port_guid, port_num, port_state, port_phy_state
 		FROM ports WHERE node_id = $1
-		ORDER BY port_num
 	`, nodeID)
 	if err != nil {
 		return nil, err
@@ -117,40 +89,12 @@ func (s *LogStore) GetPortsByNodeID(nodeID int) ([]models.Port, error) {
 	return ports, nil
 }
 
-func (s *LogStore) InsertPort(nodeID, logID int, port *models.Port) error {
+func (s *LogStore) InsertPort(nodeID int, port *models.Port) error {
 	return s.db.QueryRowx(`
-		INSERT INTO ports (node_id, log_id, port_guid, port_num, port_state, port_phy_state)
-		VALUES ($1, $2, $3, $4, $5, $6)
+		INSERT INTO ports (node_id, port_guid, port_num, port_state, port_phy_state)
+		VALUES ($1, $2, $3, $4, $5)
 		RETURNING id
-	`, nodeID, logID, port.PortGUID, port.PortNum, port.PortState, port.PortPhyState).Scan(&port.ID)
-}
-
-// BatchInsertPorts — массовая вставка портов
-func (s *LogStore) BatchInsertPorts(nodeID, logID int, ports []models.Port) error {
-	if len(ports) == 0 {
-		return nil
-	}
-
-	query := `
-		INSERT INTO ports (node_id, log_id, port_guid, port_num, port_state, port_phy_state)
-		VALUES ($1, $2, $3, $4, $5, $6)
-		RETURNING id
-	`
-
-	for i := range ports {
-		err := s.db.QueryRowx(query,
-			nodeID,
-			logID,
-			ports[i].PortGUID,
-			ports[i].PortNum,
-			ports[i].PortState,
-			ports[i].PortPhyState,
-		).Scan(&ports[i].ID)
-		if err != nil {
-			return err
-		}
-	}
-	return nil
+	`, nodeID, port.PortGUID, port.PortNum, port.PortState, port.PortPhyState).Scan(&port.ID)
 }
 
 func (s *LogStore) GetNodeInfoByNodeID(nodeID int) (*models.NodeInfo, error) {
@@ -169,18 +113,6 @@ func (s *LogStore) InsertNodeInfo(nodeID int, systemInfo, sharpInfo map[string]a
 	_, err := s.db.Exec(`
 		INSERT INTO nodes_info (node_id, system_info, sharp_info)
 		VALUES ($1, $2, $3)
-	`, nodeID, systemInfo, sharpInfo)
-	return err
-}
-
-// UpsertNodeInfo — вставляет или обновляет (если уже есть)
-func (s *LogStore) UpsertNodeInfo(nodeID int, systemInfo, sharpInfo map[string]any) error {
-	_, err := s.db.Exec(`
-		INSERT INTO nodes_info (node_id, system_info, sharp_info)
-		VALUES ($1, $2, $3)
-		ON CONFLICT (node_id) DO UPDATE SET
-			system_info = EXCLUDED.system_info,
-			sharp_info = EXCLUDED.sharp_info
 	`, nodeID, systemInfo, sharpInfo)
 	return err
 }
