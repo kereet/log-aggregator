@@ -23,7 +23,10 @@ func NewHandlers(store *database.LogStore) *Handlers {
 func respondWithJSON(w http.ResponseWriter, statusCode int, payload interface{}) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(statusCode)
-	json.NewEncoder(w).Encode(payload)
+	err := json.NewEncoder(w).Encode(payload)
+	if err != nil {
+		log.Println(err)
+	}
 }
 
 func respondWithError(w http.ResponseWriter, statusCode int, message string) {
@@ -69,7 +72,7 @@ func (h *Handlers) ParseLog(w http.ResponseWriter, r *http.Request) {
 	for i := range parseResult.Ports {
 		nodeID, ok := nodeIDByGUID[parseResult.Ports[i].NodeGUID]
 		if !ok {
-			log.Printf("Warning: node not found for port %s", parseResult.Ports[i].PortGUID)
+			log.Printf("Node not found for port %s", parseResult.Ports[i].PortGUID)
 			continue
 		}
 		parseResult.Ports[i].NodeID = nodeID
@@ -83,12 +86,12 @@ func (h *Handlers) ParseLog(w http.ResponseWriter, r *http.Request) {
 	for i := range parseResult.NodeInfos {
 		nodeID, ok := nodeIDByGUID[parseResult.NodeInfos[i].NodeGUID]
 		if !ok {
-			log.Printf("Warning: node not found for node info with GUID %s", parseResult.NodeInfos[i].NodeGUID)
+			log.Printf("Node not found for node info with GUID %s", parseResult.NodeInfos[i].NodeGUID)
 			continue
 		}
 		parseResult.NodeInfos[i].NodeID = nodeID
 		if err := h.store.InsertNodeInfo(nodeID, parseResult.NodeInfos[i].SystemInfo, parseResult.NodeInfos[i].SharpInfo); err != nil {
-			log.Printf("Warning: failed to save node info for node %d: %v", nodeID, err)
+			log.Printf("Failed to save node info for node %d: %v", nodeID, err)
 		}
 	}
 

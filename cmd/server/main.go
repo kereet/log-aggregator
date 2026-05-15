@@ -36,11 +36,6 @@ func main() {
 	mux.HandleFunc("GET /api/v1/port/{node_id}", logHandler.GetPorts)
 	mux.HandleFunc("GET /api/v1/log/{log_id}", logHandler.GetLogInfo)
 
-	//mux.HandleFunc("GET /health", func(w http.ResponseWriter, r *http.Request) {
-	//	w.WriteHeader(http.StatusOK)
-	//	w.Write([]byte("OK"))
-	//})
-
 	loggedMux := loggingMiddleware(mux)
 
 	serverAddr := ":" + serverPort

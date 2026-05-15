@@ -1,0 +1,29 @@
+# .golangci.yml
+run:
+  timeout: 5m
+  tests: true
+
+linters:
+  enable:
+    - gofmt
+    - govet
+    - errcheck
+    - staticcheck
+    - unused
+    - ineffassign
+    - misspell
+    - gosimple
+
+linters-settings:
+  gofmt:
+    simplify: true
+  errcheck:
+    check-blank: true
+  misspell:
+    locale: US
+
+issues:
+  exclude-dirs:
+    - vendor
+  exclude-files:
+    - ".*_test.go"

@@ -168,7 +168,10 @@ func parseNodesBlock(lines []string) ([]models.Node, error) {
 			nodeType = "switch"
 		}
 
-		numPorts, _ := strconv.Atoi(row[1])
+		numPorts, err := strconv.Atoi(row[1])
+		if err != nil {
+			return nil, NewParseError("NODES", i+2, "invalid port number")
+		}
 
 		node := models.Node{
 			Name:     strings.Trim(row[0], `"`),
@@ -191,9 +194,18 @@ func parsePortsBlock(lines []string) ([]models.Port, error) {
 			return nil, NewParseError("PORTS", i+2, "expected at least 26 columns")
 		}
 
-		portNum, _ := strconv.Atoi(row[2])
-		portState, _ := strconv.Atoi(row[25])
-		portPhyState, _ := strconv.Atoi(row[24])
+		portNum, err := strconv.Atoi(row[2])
+		if err != nil {
+			return nil, NewParseError("PORTS", i+2, "invalid port number")
+		}
+		portState, err := strconv.Atoi(row[25])
+		if err != nil {
+			return nil, NewParseError("PORTS", i+2, "invalid port state")
+		}
+		portPhyState, err := strconv.Atoi(row[24])
+		if err != nil {
+			return nil, NewParseError("PORTS", i+2, "invalid port phy state")
+		}
 
 		port := models.Port{
 			NodeGUID:     row[0],
@@ -285,7 +297,10 @@ func parseCSVLine(line string) []string {
 	r := csv.NewReader(strings.NewReader(line))
 	r.TrimLeadingSpace = true
 	r.LazyQuotes = true
-	record, _ := r.Read()
+	record, err := r.Read()
+	if err != nil {
+		return nil
+	}
 	if len(record) == 0 {
 		return strings.Split(line, ",")
 	}
