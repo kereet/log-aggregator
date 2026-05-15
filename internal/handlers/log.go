@@ -90,7 +90,7 @@ func (h *Handlers) ParseLog(w http.ResponseWriter, r *http.Request) {
 			continue
 		}
 		parseResult.NodeInfos[i].NodeID = nodeID
-		if err := h.store.InsertNodeInfo(nodeID, parseResult.NodeInfos[i].SystemInfo, parseResult.NodeInfos[i].SharpInfo); err != nil {
+		if err := h.store.InsertNodeInfo(&parseResult.NodeInfos[i]); err != nil {
 			log.Printf("Failed to save node info for node %d: %v", nodeID, err)
 		}
 	}

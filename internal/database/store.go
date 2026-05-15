@@ -1,6 +1,8 @@
 package database
 
 import (
+	"encoding/json"
+	"fmt"
 	"log-aggregator/internal/models"
 
 	"github.com/jmoiron/sqlx"
@@ -99,20 +101,61 @@ func (s *LogStore) InsertPort(nodeID int, port *models.Port) error {
 
 func (s *LogStore) GetNodeInfoByNodeID(nodeID int) (*models.NodeInfo, error) {
 	var info models.NodeInfo
-	err := s.db.Get(&info, `
-		SELECT id, node_id, system_info, sharp_info
-		FROM nodes_info WHERE node_id = $1
-	`, nodeID)
+	var systemInfoBytes, sharpInfoBytes []byte
+
+	err := s.db.QueryRow(`
+        SELECT id, node_id, system_info, sharp_info
+        FROM nodes_info WHERE node_id = $1
+    `, nodeID).Scan(&info.ID, &info.NodeID, &info.NodeGUID, &systemInfoBytes, &sharpInfoBytes)
+
 	if err != nil {
 		return nil, err
 	}
+
+	if len(systemInfoBytes) > 0 {
+		if err := json.Unmarshal(systemInfoBytes, &info.SystemInfo); err != nil {
+			info.SystemInfo = make(map[string]any)
+		}
+	} else {
+		info.SystemInfo = make(map[string]any)
+	}
+
+	if len(sharpInfoBytes) > 0 {
+		if err := json.Unmarshal(sharpInfoBytes, &info.SharpInfo); err != nil {
+			info.SharpInfo = make(map[string]any)
+		}
+	} else {
+		info.SharpInfo = make(map[string]any)
+	}
+
 	return &info, nil
 }
 
-func (s *LogStore) InsertNodeInfo(nodeID int, systemInfo, sharpInfo map[string]any) error {
-	_, err := s.db.Exec(`
+func (s *LogStore) InsertNodeInfo(info *models.NodeInfo) error {
+	var systemInfoJSON, sharpInfoJSON []byte
+	var err error
+
+	if info.SystemInfo != nil && len(info.SystemInfo) > 0 {
+		systemInfoJSON, err = json.Marshal(info.SystemInfo)
+		if err != nil {
+			return fmt.Errorf("failed to marshal system_info: %w", err)
+		}
+	} else {
+		systemInfoJSON = []byte("{}")
+	}
+
+	if info.SharpInfo != nil && len(info.SharpInfo) > 0 {
+		sharpInfoJSON, err = json.Marshal(info.SharpInfo)
+		if err != nil {
+			return fmt.Errorf("failed to marshal sharp_info: %w", err)
+		}
+	} else {
+		sharpInfoJSON = []byte("{}")
+	}
+
+	_, err = s.db.Exec(`
 		INSERT INTO nodes_info (node_id, system_info, sharp_info)
 		VALUES ($1, $2, $3)
-	`, nodeID, systemInfo, sharpInfo)
+	`, info.NodeID, systemInfoJSON, sharpInfoJSON)
 	return err
 }

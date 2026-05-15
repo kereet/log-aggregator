@@ -225,20 +225,10 @@ func parseSystemInfoBlock(lines []string) (map[string]map[string]any, error) {
 
 	for _, line := range lines[1:] {
 		row := parseCSVLine(line)
-		if len(row) < 2 {
-			continue
-		}
 		nodeGUID := row[0]
-
 		info := make(map[string]any)
-		for j, val := range row {
-			if j >= len(headers) {
-				break
-			}
+		for j, val := range row[1:] {
 			key := headers[j]
-			if key == "NodeGuid" {
-				continue
-			}
 			info[key] = strings.Trim(val, `"`)
 		}
 		result[nodeGUID] = info
