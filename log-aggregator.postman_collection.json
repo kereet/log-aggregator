@@ -1,0 +1,384 @@
+{
+  "info": {
+    "_postman_id": "4842818d-afdf-4f78-aa2f-fb3ea92e3931",
+    "name": "log-aggregator",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "54435583",
+    "_collection_link": "https://go.postman.co/collection/54435583-4842818d-afdf-4f78-aa2f-fb3ea92e3931?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "Parse Log",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"file_path\":\"/data/log.zip\"}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:8080/api/v1/parse/",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "api",
+            "v1",
+            "parse",
+            ""
+          ]
+        }
+      },
+      "response": [
+        {
+          "name": "Parse Log",
+          "originalRequest": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"file_path\":\"/data/log.zip\"}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:8080/api/v1/parse/",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "v1",
+                "parse",
+                ""
+              ]
+            }
+          },
+          "status": "Created",
+          "code": 201,
+          "_postman_previewlanguage": "json",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json",
+              "description": "",
+              "type": "text"
+            },
+            {
+              "key": "Date",
+              "value": "Sat, 16 May 2026 08:41:50 GMT"
+            },
+            {
+              "key": "Content-Length",
+              "value": "13"
+            }
+          ],
+          "cookie": [
+            {
+              "expires": "Invalid Date",
+              "domain": "",
+              "path": ""
+            }
+          ],
+          "body": "{\n    \"log_id\": 1\n}"
+        }
+      ]
+    },
+    {
+      "name": "Get Topology",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8080/api/v1/topology/1",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "api",
+            "v1",
+            "topology",
+            "1"
+          ]
+        }
+      },
+      "response": [
+        {
+          "name": "Get Topology",
+          "originalRequest": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/api/v1/topology/1",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "v1",
+                "topology",
+                "1"
+              ]
+            }
+          },
+          "status": "OK",
+          "code": 200,
+          "_postman_previewlanguage": "json",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json",
+              "description": "",
+              "type": "text"
+            },
+            {
+              "key": "Date",
+              "value": "Sat, 16 May 2026 08:42:17 GMT"
+            },
+            {
+              "key": "Transfer-Encoding",
+              "value": "chunked"
+            }
+          ],
+          "cookie": [
+            {
+              "expires": "Invalid Date",
+              "domain": "",
+              "path": ""
+            }
+          ],
+          "body": "{\n    \"log_id\": 1,\n    \"nodes\": [\n        {\n            \"id\": 1,\n            \"log_id\": 1,\n            \"name\": \"HOST_1\",\n            \"node_type\": \"host\",\n            \"node_guid\": \"0xhost1\",\n            \"num_ports\": 1\n        },\n        {\n            \"id\": 2,\n            \"log_id\": 1,\n            \"name\": \"SWITCH_1\",\n            \"node_type\": \"switch\",\n            \"node_guid\": \"0xswitch1\",\n            \"num_ports\": 65\n        },\n        {\n            \"id\": 3,\n            \"log_id\": 1,\n            \"name\": \"SWITCH_2\",\n            \"node_type\": \"switch\",\n            \"node_guid\": \"0xswitch2\",\n            \"num_ports\": 65\n        },\n        {\n            \"id\": 4,\n            \"log_id\": 1,\n            \"name\": \"SWITCH_3\",\n            \"node_type\": \"switch\",\n            \"node_guid\": \"0xswitch3\",\n            \"num_ports\": 65\n        },\n        {\n            \"id\": 5,\n            \"log_id\": 1,\n            \"name\": \"SWITCH_4\",\n            \"node_type\": \"switch\",\n            \"node_guid\": \"0xswitch4\",\n            \"num_ports\": 65\n        }\n    ],\n    \"ports\": {\n        \"1\": [\n            {\n                \"id\": 1,\n                \"node_id\": 1,\n                \"port_guid\": \"0xhost1\",\n                \"port_num\": 1,\n                \"port_state\": 3\n            }\n        ],\n        \"2\": [\n            {\n                \"id\": 2,\n                \"node_id\": 2,\n                \"port_guid\": \"0xswitch1\",\n                \"port_num\": 0\n            },\n            {\n                \"id\": 3,\n                \"node_id\": 2,\n                \"port_guid\": \"0xswitch1\",\n                \"port_num\": 1,\n                \"port_state\": 4\n            },\n            {\n                \"id\": 4,\n                \"node_id\": 2,\n                \"port_guid\": \"0xswitch1\",\n                \"port_num\": 33,\n                \"port_state\": 4\n            },\n            {\n                \"id\": 5,\n                \"node_id\": 2,\n                \"port_guid\": \"0xswitch1\",\n                \"port_num\": 34,\n                \"port_state\": 4\n            },\n            {\n                \"id\": 6,\n                \"node_id\": 2,\n                \"port_guid\": \"0xswitch1\",\n                \"port_num\": 35,\n                \"port_state\": 4\n            },\n            {\n                \"id\": 7,\n                \"node_id\": 2,\n                \"port_guid\": \"0xswitch1\",\n                \"port_num\": 36,\n                \"port_state\": 4\n            },\n            {\n                \"id\": 8,\n                \"node_id\": 2,\n                \"port_guid\": \"0xswitch1\",\n                \"port_num\": 37,\n                \"port_state\": 4\n            },\n            {\n                \"id\": 9,\n                \"node_id\": 2,\n                \"port_guid\": \"0xswitch1\",\n                \"port_num\": 38,\n                \"port_state\": 4\n            },\n            {\n                \"id\": 10,\n                \"node_id\": 2,\n                \"port_guid\": \"0xswitch1\",\n                \"port_num\": 39,\n                \"port_state\": 4\n            },\n            {\n                \"id\": 11,\n                \"node_id\": 2,\n                \"port_guid\": \"0xswitch1\",\n                \"port_num\": 40,\n                \"port_state\": 4\n            },\n            {\n                \"id\": 12,\n                \"node_id\": 2,\n                \"port_guid\": \"0xswitch1\",\n                \"port_num\": 41,\n                \"port_state\": 4\n            },\n            {\n                \"id\": 13,\n                \"node_id\": 2,\n                \"port_guid\": \"0xswitch1\",\n                \"port_num\": 42,\n                \"port_state\": 4\n            },\n            {\n                \"id\": 14,\n                \"node_id\": 2,\n                \"port_guid\": \"0xswitch1\",\n                \"port_num\": 43,\n                \"port_state\": 4\n            },\n            {\n                \"id\": 15,\n                \"node_id\": 2,\n                \"port_guid\": \"0xswitch1\",\n                \"port_num\": 44,\n                \"port_state\": 4\n            },\n            {\n                \"id\": 16,\n                \"node_id\": 2,\n                \"port_guid\": \"0xswitch1\",\n                \"port_num\": 45,\n                \"port_state\": 4\n            },\n            {\n                \"id\": 17,\n                \"node_id\": 2,\n                \"port_guid\": \"0xswitch1\",\n                \"port_num\": 46,\n                \"port_state\": 4\n            },\n            {\n                \"id\": 18,\n                \"node_id\": 2,\n                \"port_guid\": \"0xswitch1\",\n                \"port_num\": 47,\n                \"port_state\": 4\n            },\n            {\n                \"id\": 19,\n                \"node_id\": 2,\n                \"port_guid\": \"0xswitch1\",\n                \"port_num\": 48,\n                \"port_state\": 4\n            },\n            {\n                \"id\": 20,\n                \"node_id\": 2,\n                \"port_guid\": \"0xswitch1\",\n                \"port_num\": 49,\n                \"port_state\": 4\n            },\n            {\n                \"id\": 21,\n                \"node_id\": 2,\n                \"port_guid\": \"0xswitch1\",\n                \"port_num\": 50,\n                \"port_state\": 4\n            },\n            {\n                \"id\": 22,\n                \"node_id\": 2,\n                \"port_guid\": \"0xswitch1\",\n                \"port_num\": 51,\n                \"port_state\": 4\n            },\n            {\n                \"id\": 23,\n                \"node_id\": 2,\n                \"port_guid\": \"0xswitch1\",\n                \"port_num\": 52,\n                \"port_state\": 4\n            },\n            {\n                \"id\": 24,\n                \"node_id\": 2,\n                \"port_guid\": \"0xswitch1\",\n                \"port_num\": 53,\n                \"port_state\": 4\n            },\n            {\n                \"id\": 25,\n                \"node_id\": 2,\n                \"port_guid\": \"0xswitch1\",\n                \"port_num\": 54,\n                \"port_state\": 4\n            },\n            {\n                \"id\": 26,\n                \"node_id\": 2,\n                \"port_guid\": \"0xswitch1\",\n                \"port_num\": 55,\n                \"port_state\": 4\n            },\n            {\n                \"id\": 27,\n                \"node_id\": 2,\n                \"port_guid\": \"0xswitch1\",\n                \"port_num\": 56,\n                \"port_state\": 4\n            },\n            {\n                \"id\": 28,\n                \"node_id\": 2,\n                \"port_guid\": \"0xswitch1\",\n                \"port_num\": 57,\n                \"port_state\": 4\n            },\n            {\n                \"id\": 29,\n                \"node_id\": 2,\n                \"port_guid\": \"0xswitch1\",\n                \"port_num\": 58,\n                \"port_state\": 4\n            },\n            {\n                \"id\": 30,\n                \"node_id\": 2,\n                \"port_guid\": \"0xswitch1\",\n                \"port_num\": 59,\n                \"port_state\": 4\n            },\n            {\n                \"id\": 31,\n                \"node_id\": 2,\n                \"port_guid\": \"0xswitch1\",\n                \"port_num\": 60,\n                \"port_state\": 4\n            },\n            {\n                \"id\": 32,\n                \"node_id\": 2,\n                \"port_guid\": \"0xswitch1\",\n                \"port_num\": 61,\n                \"port_state\": 4\n            },\n            {\n                \"id\": 33,\n                \"node_id\": 2,\n                \"port_guid\": \"0xswitch1\",\n                \"port_num\": 62,\n                \"port_state\": 4\n            },\n            {\n                \"id\": 34,\n                \"node_id\": 2,\n                \"port_guid\": \"0xswitch1\",\n                \"port_num\": 63,\n                \"port_state\": 4\n            },\n            {\n                \"id\": 35,\n                \"node_id\": 2,\n                \"port_guid\": \"0xswitch1\",\n                \"port_num\": 64,\n                \"port_state\": 4\n            },\n            {\n                \"id\": 36,\n                \"node_id\": 2,\n                \"port_guid\": \"0xswitch1\",\n                \"port_num\": 65,\n                \"port_state\": 2\n            }\n        ],\n        \"3\": [\n            {\n                \"id\": 37,\n                \"node_id\": 3,\n                \"port_guid\": \"0xswitch2\",\n                \"port_num\": 0\n            },\n            {\n                \"id\": 38,\n                \"node_id\": 3,\n                \"port_guid\": \"0xswitch2\",\n                \"port_num\": 1,\n                \"port_state\": 4\n            },\n            {\n                \"id\": 39,\n                \"node_id\": 3,\n                \"port_guid\": \"0xswitch2\",\n                \"port_num\": 2,\n                \"port_state\": 4\n            },\n            {\n                \"id\": 40,\n                \"node_id\": 3,\n                \"port_guid\": \"0xswitch2\",\n                \"port_num\": 3,\n                \"port_state\": 4\n            },\n            {\n                \"id\": 41,\n                \"node_id\": 3,\n                \"port_guid\": \"0xswitch2\",\n                \"port_num\": 4,\n                \"port_state\": 4\n            },\n            {\n                \"id\": 42,\n                \"node_id\": 3,\n                \"port_guid\": \"0xswitch2\",\n                \"port_num\": 33,\n                \"port_state\": 4\n            },\n            {\n                \"id\": 43,\n                \"node_id\": 3,\n                \"port_guid\": \"0xswitch2\",\n                \"port_num\": 34,\n                \"port_state\": 4\n            },\n            {\n                \"id\": 44,\n                \"node_id\": 3,\n                \"port_guid\": \"0xswitch2\",\n                \"port_num\": 35,\n                \"port_state\": 4\n            },\n            {\n                \"id\": 45,\n                \"node_id\": 3,\n                \"port_guid\": \"0xswitch2\",\n                \"port_num\": 36,\n                \"port_state\": 4\n            },\n            {\n                \"id\": 46,\n                \"node_id\": 3,\n                \"port_guid\": \"0xswitch2\",\n                \"port_num\": 37,\n                \"port_state\": 4\n            },\n            {\n                \"id\": 47,\n                \"node_id\": 3,\n                \"port_guid\": \"0xswitch2\",\n                \"port_num\": 38,\n                \"port_state\": 4\n            },\n            {\n                \"id\": 48,\n                \"node_id\": 3,\n                \"port_guid\": \"0xswitch2\",\n                \"port_num\": 39,\n                \"port_state\": 4\n            },\n            {\n                \"id\": 49,\n                \"node_id\": 3,\n                \"port_guid\": \"0xswitch2\",\n                \"port_num\": 40,\n                \"port_state\": 4\n            },\n            {\n                \"id\": 50,\n                \"node_id\": 3,\n                \"port_guid\": \"0xswitch2\",\n                \"port_num\": 41,\n                \"port_state\": 4\n            },\n            {\n                \"id\": 51,\n                \"node_id\": 3,\n                \"port_guid\": \"0xswitch2\",\n                \"port_num\": 42,\n                \"port_state\": 4\n            },\n            {\n                \"id\": 52,\n                \"node_id\": 3,\n                \"port_guid\": \"0xswitch2\",\n                \"port_num\": 43,\n                \"port_state\": 4\n            },\n            {\n                \"id\": 53,\n                \"node_id\": 3,\n                \"port_guid\": \"0xswitch2\",\n                \"port_num\": 44,\n                \"port_state\": 4\n            },\n            {\n                \"id\": 54,\n                \"node_id\": 3,\n                \"port_guid\": \"0xswitch2\",\n                \"port_num\": 45,\n                \"port_state\": 4\n            },\n            {\n                \"id\": 55,\n                \"node_id\": 3,\n                \"port_guid\": \"0xswitch2\",\n                \"port_num\": 46,\n                \"port_state\": 4\n            },\n            {\n                \"id\": 56,\n                \"node_id\": 3,\n                \"port_guid\": \"0xswitch2\",\n                \"port_num\": 47,\n                \"port_state\": 4\n            },\n            {\n                \"id\": 57,\n                \"node_id\": 3,\n                \"port_guid\": \"0xswitch2\",\n                \"port_num\": 48,\n                \"port_state\": 4\n            },\n            {\n                \"id\": 58,\n                \"node_id\": 3,\n                \"port_guid\": \"0xswitch2\",\n                \"port_num\": 49,\n                \"port_state\": 4\n            },\n            {\n                \"id\": 59,\n                \"node_id\": 3,\n                \"port_guid\": \"0xswitch2\",\n                \"port_num\": 50,\n                \"port_state\": 4\n            },\n            {\n                \"id\": 60,\n                \"node_id\": 3,\n                \"port_guid\": \"0xswitch2\",\n                \"port_num\": 51,\n                \"port_state\": 4\n            },\n            {\n                \"id\": 61,\n                \"node_id\": 3,\n                \"port_guid\": \"0xswitch2\",\n                \"port_num\": 52,\n                \"port_state\": 4\n            },\n            {\n                \"id\": 62,\n                \"node_id\": 3,\n                \"port_guid\": \"0xswitch2\",\n                \"port_num\": 53,\n                \"port_state\": 4\n            },\n            {\n                \"id\": 63,\n                \"node_id\": 3,\n                \"port_guid\": \"0xswitch2\",\n                \"port_num\": 54,\n                \"port_state\": 4\n            },\n            {\n                \"id\": 64,\n                \"node_id\": 3,\n                \"port_guid\": \"0xswitch2\",\n                \"port_num\": 55,\n                \"port_state\": 4\n            },\n            {\n                \"id\": 65,\n                \"node_id\": 3,\n                \"port_guid\": \"0xswitch2\",\n                \"port_num\": 56,\n                \"port_state\": 4\n            },\n            {\n                \"id\": 66,\n                \"node_id\": 3,\n                \"port_guid\": \"0xswitch2\",\n                \"port_num\": 57,\n                \"port_state\": 4\n            },\n            {\n                \"id\": 67,\n                \"node_id\": 3,\n                \"port_guid\": \"0xswitch2\",\n                \"port_num\": 58,\n                \"port_state\": 4\n            },\n            {\n                \"id\": 68,\n                \"node_id\": 3,\n                \"port_guid\": \"0xswitch2\",\n                \"port_num\": 59,\n                \"port_state\": 4\n            },\n            {\n                \"id\": 69,\n                \"node_id\": 3,\n                \"port_guid\": \"0xswitch2\",\n                \"port_num\": 60,\n                \"port_state\": 4\n            },\n            {\n                \"id\": 70,\n                \"node_id\": 3,\n                \"port_guid\": \"0xswitch2\",\n                \"port_num\": 61,\n                \"port_state\": 4\n            },\n            {\n                \"id\": 71,\n                \"node_id\": 3,\n                \"port_guid\": \"0xswitch2\",\n                \"port_num\": 62,\n                \"port_state\": 4\n            },\n            {\n                \"id\": 72,\n                \"node_id\": 3,\n                \"port_guid\": \"0xswitch2\",\n                \"port_num\": 63,\n                \"port_state\": 4\n            },\n            {\n                \"id\": 73,\n                \"node_id\": 3,\n                \"port_guid\": \"0xswitch2\",\n                \"port_num\": 64,\n                \"port_state\": 4\n            },\n            {\n                \"id\": 74,\n                \"node_id\": 3,\n                \"port_guid\": \"0xswitch2\",\n                \"port_num\": 65,\n                \"port_state\": 2\n            }\n        ],\n        \"4\": [\n            {\n                \"id\": 75,\n                \"node_id\": 4,\n                \"port_guid\": \"0xswitch3\",\n                \"port_num\": 0\n            },\n            {\n                \"id\": 76,\n                \"node_id\": 4,\n                \"port_guid\": \"0xswitch3\",\n                \"port_num\": 1,\n                \"port_state\": 4\n            },\n            {\n                \"id\": 77,\n                \"node_id\": 4,\n                \"port_guid\": \"0xswitch3\",\n                \"port_num\": 2,\n                \"port_state\": 4\n            },\n            {\n                \"id\": 78,\n                \"node_id\": 4,\n                \"port_guid\": \"0xswitch3\",\n                \"port_num\": 3,\n                \"port_state\": 4\n            },\n            {\n                \"id\": 79,\n                \"node_id\": 4,\n                \"port_guid\": \"0xswitch3\",\n                \"port_num\": 4,\n                \"port_state\": 4\n            },\n            {\n                \"id\": 80,\n                \"node_id\": 4,\n                \"port_guid\": \"0xswitch3\",\n                \"port_num\": 5,\n                \"port_state\": 4\n            },\n            {\n                \"id\": 81,\n                \"node_id\": 4,\n                \"port_guid\": \"0xswitch3\",\n                \"port_num\": 33,\n                \"port_state\": 4\n            },\n            {\n                \"id\": 82,\n                \"node_id\": 4,\n                \"port_guid\": \"0xswitch3\",\n                \"port_num\": 34,\n                \"port_state\": 4\n            },\n            {\n                \"id\": 83,\n                \"node_id\": 4,\n                \"port_guid\": \"0xswitch3\",\n                \"port_num\": 35,\n                \"port_state\": 4\n            },\n            {\n                \"id\": 84,\n                \"node_id\": 4,\n                \"port_guid\": \"0xswitch3\",\n                \"port_num\": 37,\n                \"port_state\": 4\n            },\n            {\n                \"id\": 85,\n                \"node_id\": 4,\n                \"port_guid\": \"0xswitch3\",\n                \"port_num\": 38,\n                \"port_state\": 4\n            },\n            {\n                \"id\": 86,\n                \"node_id\": 4,\n                \"port_guid\": \"0xswitch3\",\n                \"port_num\": 39,\n                \"port_state\": 4\n            },\n            {\n                \"id\": 87,\n                \"node_id\": 4,\n                \"port_guid\": \"0xswitch3\",\n                \"port_num\": 40,\n                \"port_state\": 4\n            },\n            {\n                \"id\": 88,\n                \"node_id\": 4,\n                \"port_guid\": \"0xswitch3\",\n                \"port_num\": 41,\n                \"port_state\": 4\n            },\n            {\n                \"id\": 89,\n                \"node_id\": 4,\n                \"port_guid\": \"0xswitch3\",\n                \"port_num\": 42,\n                \"port_state\": 4\n            },\n            {\n                \"id\": 90,\n                \"node_id\": 4,\n                \"port_guid\": \"0xswitch3\",\n                \"port_num\": 43,\n                \"port_state\": 4\n            },\n            {\n                \"id\": 91,\n                \"node_id\": 4,\n                \"port_guid\": \"0xswitch3\",\n                \"port_num\": 44,\n                \"port_state\": 4\n            },\n            {\n                \"id\": 92,\n                \"node_id\": 4,\n                \"port_guid\": \"0xswitch3\",\n                \"port_num\": 45,\n                \"port_state\": 4\n            },\n            {\n                \"id\": 93,\n                \"node_id\": 4,\n                \"port_guid\": \"0xswitch3\",\n                \"port_num\": 46,\n                \"port_state\": 4\n            },\n            {\n                \"id\": 94,\n                \"node_id\": 4,\n                \"port_guid\": \"0xswitch3\",\n                \"port_num\": 47,\n                \"port_state\": 4\n            },\n            {\n                \"id\": 95,\n                \"node_id\": 4,\n                \"port_guid\": \"0xswitch3\",\n                \"port_num\": 48,\n                \"port_state\": 4\n            },\n            {\n                \"id\": 96,\n                \"node_id\": 4,\n                \"port_guid\": \"0xswitch3\",\n                \"port_num\": 49,\n                \"port_state\": 4\n            },\n            {\n                \"id\": 97,\n                \"node_id\": 4,\n                \"port_guid\": \"0xswitch3\",\n                \"port_num\": 50,\n                \"port_state\": 4\n            },\n            {\n                \"id\": 98,\n                \"node_id\": 4,\n                \"port_guid\": \"0xswitch3\",\n                \"port_num\": 51,\n                \"port_state\": 4\n            },\n            {\n                \"id\": 99,\n                \"node_id\": 4,\n                \"port_guid\": \"0xswitch3\",\n                \"port_num\": 52,\n                \"port_state\": 4\n            },\n            {\n                \"id\": 100,\n                \"node_id\": 4,\n                \"port_guid\": \"0xswitch3\",\n                \"port_num\": 53,\n                \"port_state\": 4\n            },\n            {\n                \"id\": 101,\n                \"node_id\": 4,\n                \"port_guid\": \"0xswitch3\",\n                \"port_num\": 54,\n                \"port_state\": 4\n            },\n            {\n                \"id\": 102,\n                \"node_id\": 4,\n                \"port_guid\": \"0xswitch3\",\n                \"port_num\": 55,\n                \"port_state\": 4\n            },\n            {\n                \"id\": 103,\n                \"node_id\": 4,\n                \"port_guid\": \"0xswitch3\",\n                \"port_num\": 56,\n                \"port_state\": 4\n            },\n            {\n                \"id\": 104,\n                \"node_id\": 4,\n                \"port_guid\": \"0xswitch3\",\n                \"port_num\": 57,\n                \"port_state\": 4\n            },\n            {\n                \"id\": 105,\n                \"node_id\": 4,\n                \"port_guid\": \"0xswitch3\",\n                \"port_num\": 58,\n                \"port_state\": 4\n            },\n            {\n                \"id\": 106,\n                \"node_id\": 4,\n                \"port_guid\": \"0xswitch3\",\n                \"port_num\": 59,\n                \"port_state\": 4\n            },\n            {\n                \"id\": 107,\n                \"node_id\": 4,\n                \"port_guid\": \"0xswitch3\",\n                \"port_num\": 60,\n                \"port_state\": 4\n            },\n            {\n                \"id\": 108,\n                \"node_id\": 4,\n                \"port_guid\": \"0xswitch3\",\n                \"port_num\": 61,\n                \"port_state\": 4\n            },\n            {\n                \"id\": 109,\n                \"node_id\": 4,\n                \"port_guid\": \"0xswitch3\",\n                \"port_num\": 62,\n                \"port_state\": 4\n            },\n            {\n                \"id\": 110,\n                \"node_id\": 4,\n                \"port_guid\": \"0xswitch3\",\n                \"port_num\": 63,\n                \"port_state\": 4\n            },\n            {\n                \"id\": 111,\n                \"node_id\": 4,\n                \"port_guid\": \"0xswitch3\",\n                \"port_num\": 64,\n                \"port_state\": 4\n            },\n            {\n                \"id\": 112,\n                \"node_id\": 4,\n                \"port_guid\": \"0xswitch3\",\n                \"port_num\": 65,\n                \"port_state\": 2\n            }\n        ],\n        \"5\": [\n            {\n                \"id\": 113,\n                \"node_id\": 5,\n                \"port_guid\": \"0xswitch4\",\n                \"port_num\": 0\n            },\n            {\n                \"id\": 114,\n                \"node_id\": 5,\n                \"port_guid\": \"0xswitch4\",\n                \"port_num\": 1,\n                \"port_state\": 4\n            },\n            {\n                \"id\": 115,\n                \"node_id\": 5,\n                \"port_guid\": \"0xswitch4\",\n                \"port_num\": 2,\n                \"port_state\": 4\n            },\n            {\n                \"id\": 116,\n                \"node_id\": 5,\n                \"port_guid\": \"0xswitch4\",\n                \"port_num\": 3,\n                \"port_state\": 4\n            },\n            {\n                \"id\": 117,\n                \"node_id\": 5,\n                \"port_guid\": \"0xswitch4\",\n                \"port_num\": 4,\n                \"port_state\": 4\n            },\n            {\n                \"id\": 118,\n                \"node_id\": 5,\n                \"port_guid\": \"0xswitch4\",\n                \"port_num\": 5,\n                \"port_state\": 4\n            },\n            {\n                \"id\": 119,\n                \"node_id\": 5,\n                \"port_guid\": \"0xswitch4\",\n                \"port_num\": 33,\n                \"port_state\": 4\n            },\n            {\n                \"id\": 120,\n                \"node_id\": 5,\n                \"port_guid\": \"0xswitch4\",\n                \"port_num\": 34,\n                \"port_state\": 4\n            },\n            {\n                \"id\": 121,\n                \"node_id\": 5,\n                \"port_guid\": \"0xswitch4\",\n                \"port_num\": 35,\n                \"port_state\": 4\n            },\n            {\n                \"id\": 122,\n                \"node_id\": 5,\n                \"port_guid\": \"0xswitch4\",\n                \"port_num\": 36,\n                \"port_state\": 4\n            },\n            {\n                \"id\": 123,\n                \"node_id\": 5,\n                \"port_guid\": \"0xswitch4\",\n                \"port_num\": 37,\n                \"port_state\": 4\n            },\n            {\n                \"id\": 124,\n                \"node_id\": 5,\n                \"port_guid\": \"0xswitch4\",\n                \"port_num\": 38,\n                \"port_state\": 4\n            },\n            {\n                \"id\": 125,\n                \"node_id\": 5,\n                \"port_guid\": \"0xswitch4\",\n                \"port_num\": 39,\n                \"port_state\": 4\n            },\n            {\n                \"id\": 126,\n                \"node_id\": 5,\n                \"port_guid\": \"0xswitch4\",\n                \"port_num\": 40,\n                \"port_state\": 4\n            },\n            {\n                \"id\": 127,\n                \"node_id\": 5,\n                \"port_guid\": \"0xswitch4\",\n                \"port_num\": 41,\n                \"port_state\": 4\n            },\n            {\n                \"id\": 128,\n                \"node_id\": 5,\n                \"port_guid\": \"0xswitch4\",\n                \"port_num\": 42,\n                \"port_state\": 4\n            },\n            {\n                \"id\": 129,\n                \"node_id\": 5,\n                \"port_guid\": \"0xswitch4\",\n                \"port_num\": 43,\n                \"port_state\": 4\n            },\n            {\n                \"id\": 130,\n                \"node_id\": 5,\n                \"port_guid\": \"0xswitch4\",\n                \"port_num\": 44,\n                \"port_state\": 4\n            },\n            {\n                \"id\": 131,\n                \"node_id\": 5,\n                \"port_guid\": \"0xswitch4\",\n                \"port_num\": 45,\n                \"port_state\": 4\n            },\n            {\n                \"id\": 132,\n                \"node_id\": 5,\n                \"port_guid\": \"0xswitch4\",\n                \"port_num\": 46,\n                \"port_state\": 4\n            },\n            {\n                \"id\": 133,\n                \"node_id\": 5,\n                \"port_guid\": \"0xswitch4\",\n                \"port_num\": 47,\n                \"port_state\": 4\n            },\n            {\n                \"id\": 134,\n                \"node_id\": 5,\n                \"port_guid\": \"0xswitch4\",\n                \"port_num\": 48,\n                \"port_state\": 4\n            },\n            {\n                \"id\": 135,\n                \"node_id\": 5,\n                \"port_guid\": \"0xswitch4\",\n                \"port_num\": 49,\n                \"port_state\": 4\n            },\n            {\n                \"id\": 136,\n                \"node_id\": 5,\n                \"port_guid\": \"0xswitch4\",\n                \"port_num\": 50,\n                \"port_state\": 4\n            },\n            {\n                \"id\": 137,\n                \"node_id\": 5,\n                \"port_guid\": \"0xswitch4\",\n                \"port_num\": 51,\n                \"port_state\": 4\n            },\n            {\n                \"id\": 138,\n                \"node_id\": 5,\n                \"port_guid\": \"0xswitch4\",\n                \"port_num\": 52,\n                \"port_state\": 4\n            },\n            {\n                \"id\": 139,\n                \"node_id\": 5,\n                \"port_guid\": \"0xswitch4\",\n                \"port_num\": 53,\n                \"port_state\": 4\n            },\n            {\n                \"id\": 140,\n                \"node_id\": 5,\n                \"port_guid\": \"0xswitch4\",\n                \"port_num\": 54,\n                \"port_state\": 4\n            },\n            {\n                \"id\": 141,\n                \"node_id\": 5,\n                \"port_guid\": \"0xswitch4\",\n                \"port_num\": 55,\n                \"port_state\": 4\n            },\n            {\n                \"id\": 142,\n                \"node_id\": 5,\n                \"port_guid\": \"0xswitch4\",\n                \"port_num\": 56,\n                \"port_state\": 4\n            },\n            {\n                \"id\": 143,\n                \"node_id\": 5,\n                \"port_guid\": \"0xswitch4\",\n                \"port_num\": 57,\n                \"port_state\": 4\n            },\n            {\n                \"id\": 144,\n                \"node_id\": 5,\n                \"port_guid\": \"0xswitch4\",\n                \"port_num\": 58,\n                \"port_state\": 4\n            },\n            {\n                \"id\": 145,\n                \"node_id\": 5,\n                \"port_guid\": \"0xswitch4\",\n                \"port_num\": 59,\n                \"port_state\": 4\n            },\n            {\n                \"id\": 146,\n                \"node_id\": 5,\n                \"port_guid\": \"0xswitch4\",\n                \"port_num\": 60,\n                \"port_state\": 4\n            },\n            {\n                \"id\": 147,\n                \"node_id\": 5,\n                \"port_guid\": \"0xswitch4\",\n                \"port_num\": 61,\n                \"port_state\": 4\n            },\n            {\n                \"id\": 148,\n                \"node_id\": 5,\n                \"port_guid\": \"0xswitch4\",\n                \"port_num\": 62,\n                \"port_state\": 4\n            },\n            {\n                \"id\": 149,\n                \"node_id\": 5,\n                \"port_guid\": \"0xswitch4\",\n                \"port_num\": 63,\n                \"port_state\": 4\n            },\n            {\n                \"id\": 150,\n                \"node_id\": 5,\n                \"port_guid\": \"0xswitch4\",\n                \"port_num\": 64,\n                \"port_state\": 4\n            },\n            {\n                \"id\": 151,\n                \"node_id\": 5,\n                \"port_guid\": \"0xswitch4\",\n                \"port_num\": 65,\n                \"port_state\": 2\n            }\n        ]\n    }\n}"
+        }
+      ]
+    },
+    {
+      "name": "Get Node",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8080/api/v1/node/1",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "api",
+            "v1",
+            "node",
+            "1"
+          ]
+        }
+      },
+      "response": [
+        {
+          "name": "Get Node",
+          "originalRequest": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/api/v1/node/1",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "v1",
+                "node",
+                "1"
+              ]
+            }
+          },
+          "status": "OK",
+          "code": 200,
+          "_postman_previewlanguage": "json",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json",
+              "description": "",
+              "type": "text"
+            },
+            {
+              "key": "Date",
+              "value": "Sat, 16 May 2026 08:42:53 GMT"
+            },
+            {
+              "key": "Content-Length",
+              "value": "161"
+            }
+          ],
+          "cookie": [
+            {
+              "expires": "Invalid Date",
+              "domain": "",
+              "path": ""
+            }
+          ],
+          "body": "{\n    \"id\": 1,\n    \"name\": \"HOST_1\",\n    \"node_type\": \"host\",\n    \"node_guid\": \"0xhost1\",\n    \"num_ports\": 1,\n    \"ports\": [\n        {\n            \"id\": 1,\n            \"node_id\": 1,\n            \"port_guid\": \"0xhost1\",\n            \"port_num\": 1,\n            \"port_state\": 3\n        }\n    ]\n}"
+        }
+      ]
+    },
+    {
+      "name": "Get Ports",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8080/api/v1/port/1",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "api",
+            "v1",
+            "port",
+            "1"
+          ]
+        }
+      },
+      "response": [
+        {
+          "name": "Get Ports",
+          "originalRequest": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/api/v1/port/1",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "v1",
+                "port",
+                "1"
+              ]
+            }
+          },
+          "status": "OK",
+          "code": 200,
+          "_postman_previewlanguage": "json",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json",
+              "description": "",
+              "type": "text"
+            },
+            {
+              "key": "Date",
+              "value": "Sat, 16 May 2026 08:43:39 GMT"
+            },
+            {
+              "key": "Content-Length",
+              "value": "73"
+            }
+          ],
+          "cookie": [
+            {
+              "expires": "Invalid Date",
+              "domain": "",
+              "path": ""
+            }
+          ],
+          "body": "[\n    {\n        \"id\": 1,\n        \"node_id\": 1,\n        \"port_guid\": \"0xhost1\",\n        \"port_num\": 1,\n        \"port_state\": 3\n    }\n]"
+        }
+      ]
+    },
+    {
+      "name": "Get Log Info",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8080/api/v1/log/1",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "api",
+            "v1",
+            "log",
+            "1"
+          ]
+        }
+      },
+      "response": [
+        {
+          "name": "Get Log Info",
+          "originalRequest": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/api/v1/log/1",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "v1",
+                "log",
+                "1"
+              ]
+            }
+          },
+          "status": "OK",
+          "code": 200,
+          "_postman_previewlanguage": "json",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json",
+              "description": "",
+              "type": "text"
+            },
+            {
+              "key": "Date",
+              "value": "Sat, 16 May 2026 08:44:28 GMT"
+            },
+            {
+              "key": "Content-Length",
+              "value": "136"
+            }
+          ],
+          "cookie": [
+            {
+              "expires": "Invalid Date",
+              "domain": "",
+              "path": ""
+            }
+          ],
+          "body": "{\n    \"id\": 1,\n    \"file_path\": \"/data/log.zip\",\n    \"status\": \"completed\",\n    \"nodes_count\": 5,\n    \"ports_count\": 151,\n    \"uploaded_at\": \"2026-05-16T08:41:49.615333Z\"\n}"
+        }
+      ]
+    }
+  ]
+}
