@@ -1,4 +1,3 @@
-# .golangci.yml
 run:
   timeout: 5m
   tests: true
@@ -21,9 +20,3 @@ linters-settings:
     check-blank: true
   misspell:
     locale: US
-
-issues:
-  exclude-dirs:
-    - vendor
-  exclude-files:
-    - ".*_test.go"
