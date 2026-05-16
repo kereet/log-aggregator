@@ -7,6 +7,7 @@ import (
 	"log-aggregator/internal/database"
 	"log-aggregator/internal/models"
 	"log-aggregator/internal/parser"
+	"log/slog"
 	"net/http"
 	"strconv"
 	"strings"
@@ -23,7 +24,9 @@ func NewHandlers(store *database.LogStore) *Handlers {
 func respondWithJSON(w http.ResponseWriter, statusCode int, payload interface{}) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(statusCode)
-	json.NewEncoder(w).Encode(payload)
+	if err := json.NewEncoder(w).Encode(payload); err != nil {
+		slog.Error("failed to encode response", "error", err)
+	}
 }
 
 func respondWithError(w http.ResponseWriter, statusCode int, message string) {
@@ -50,7 +53,9 @@ func (h *Handlers) ParseLog(w http.ResponseWriter, r *http.Request) {
 
 	parseResult, err := parser.ParseZip(input.FilePath)
 	if err != nil {
-		h.store.UpdateLogStatus(logID, "failed", 0, 0)
+		if err := h.store.UpdateLogStatus(logID, "failed", 0, 0); err != nil {
+			slog.Error("failed to update log status", "error", err)
+		}
 		respondWithError(w, http.StatusBadRequest, "Parse error: "+err.Error())
 		return
 	}
@@ -59,7 +64,9 @@ func (h *Handlers) ParseLog(w http.ResponseWriter, r *http.Request) {
 	for i := range parseResult.Nodes {
 		parseResult.Nodes[i].LogID = logID
 		if err := h.store.InsertNode(logID, &parseResult.Nodes[i]); err != nil {
-			h.store.UpdateLogStatus(logID, "failed", 0, 0)
+			if err := h.store.UpdateLogStatus(logID, "failed", 0, 0); err != nil {
+				slog.Error("failed to update log status", "error", err)
+			}
 			respondWithError(w, http.StatusInternalServerError, "Failed to save node: "+err.Error())
 			return
 		}
@@ -74,7 +81,9 @@ func (h *Handlers) ParseLog(w http.ResponseWriter, r *http.Request) {
 		}
 		parseResult.Ports[i].NodeID = nodeID
 		if err := h.store.InsertPort(nodeID, &parseResult.Ports[i]); err != nil {
-			h.store.UpdateLogStatus(logID, "failed", 0, 0)
+			if err := h.store.UpdateLogStatus(logID, "failed", 0, 0); err != nil {
+				slog.Error("failed to update log status", "error", err)
+			}
 			respondWithError(w, http.StatusInternalServerError, "Failed to save port: "+err.Error())
 			return
 		}
@@ -83,28 +92,44 @@ func (h *Handlers) ParseLog(w http.ResponseWriter, r *http.Request) {
 	for i := range parseResult.NodeInfos {
 		nodeID, ok := nodeIDByGUID[parseResult.NodeInfos[i].NodeGUID]
 		if !ok {
-			log.Printf("Node not found for node info with GUID %s", parseResult.NodeInfos[i].NodeGUID)
+			slog.Error("Node not found for node info",
+				slog.String("GUID", parseResult.NodeInfos[i].NodeGUID),
+			)
 			continue
 		}
 		parseResult.NodeInfos[i].NodeID = nodeID
 		if err := h.store.InsertNodeInfo(&parseResult.NodeInfos[i]); err != nil {
-			log.Printf("Failed to save node info for node %d: %v", nodeID, err)
+			slog.Error("Failed to save node info",
+				slog.Int("node_id", nodeID),
+				slog.String("error", err.Error()),
+			)
 		}
 	}
 
 	nodesCount := len(parseResult.Nodes)
 	portsCount := len(parseResult.Ports)
-	h.store.UpdateLogStatus(logID, "completed", nodesCount, portsCount)
 
+	if err := h.store.UpdateLogStatus(logID, "completed", nodesCount, portsCount); err != nil {
+		slog.Error("failed to update log status", "error", err)
+	}
 	respondWithJSON(w, http.StatusCreated, models.ParseLogResponse{LogID: logID})
 }
 
 func (h *Handlers) GetTopology(w http.ResponseWriter, r *http.Request) {
-	logID, _ := strconv.Atoi(r.PathValue("log_id"))
-	nodes, _ := h.store.GetNodesByLogID(logID)
+	logID, err := strconv.Atoi(r.PathValue("log_id"))
+	if err != nil {
+		respondWithError(w, http.StatusBadRequest, "Invalid log_id")
+	}
+	nodes, err := h.store.GetNodesByLogID(logID)
+	if err != nil {
+		respondWithError(w, http.StatusInternalServerError, err.Error())
+	}
 	portsByNode := make(map[int][]models.Port)
 	for _, node := range nodes {
-		ports, _ := h.store.GetPortsByNodeID(node.ID)
+		ports, err := h.store.GetPortsByNodeID(node.ID)
+		if err != nil {
+			respondWithError(w, http.StatusInternalServerError, err.Error())
+		}
 		portsByNode[node.ID] = ports
 	}
 	topology := aggregator.BuildTopology(logID, nodes, portsByNode)
@@ -130,8 +155,14 @@ func (h *Handlers) GetNode(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	ports, _ := h.store.GetPortsByNodeID(nodeID)
-	nodeInfo, _ := h.store.GetNodeInfoByNodeID(nodeID)
+	ports, err := h.store.GetPortsByNodeID(nodeID)
+	if err != nil {
+		respondWithError(w, http.StatusInternalServerError, err.Error())
+	}
+	nodeInfo, err := h.store.GetNodeInfoByNodeID(nodeID)
+	if err != nil {
+		respondWithError(w, http.StatusInternalServerError, err.Error())
+	}
 
 	response := struct {
 		ID         int            `json:"id"`

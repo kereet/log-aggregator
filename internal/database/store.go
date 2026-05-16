@@ -135,7 +135,7 @@ func (s *LogStore) InsertNodeInfo(info *models.NodeInfo) error {
 	var systemInfoJSON, sharpInfoJSON []byte
 	var err error
 
-	if info.SystemInfo != nil && len(info.SystemInfo) > 0 {
+	if len(info.SystemInfo) > 0 {
 		systemInfoJSON, err = json.Marshal(info.SystemInfo)
 		if err != nil {
 			return fmt.Errorf("failed to marshal system_info: %w", err)
@@ -144,7 +144,7 @@ func (s *LogStore) InsertNodeInfo(info *models.NodeInfo) error {
 		systemInfoJSON = []byte("{}")
 	}
 
-	if info.SharpInfo != nil && len(info.SharpInfo) > 0 {
+	if len(info.SharpInfo) > 0 {
 		sharpInfoJSON, err = json.Marshal(info.SharpInfo)
 		if err != nil {
 			return fmt.Errorf("failed to marshal sharp_info: %w", err)
